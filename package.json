@@ -2,8 +2,11 @@
   "dependencies": {
     "chance": "^1.1.7",
     "express": "^4.17.1",
-    "nodemon": "^2.0.9",
+    "nodemon": "^2.0.12",
     "socket.io": "^4.1.2",
-    "uuid": "^8.3.2"
+    "socket.io-stream": "^0.9.1",
+    "uuid": "^8.3.2",
+    "ytdl-core": "^4.9.1",
+    "ytsr": "^3.5.0"
   }
 }

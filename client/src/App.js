@@ -8,7 +8,7 @@ import io from "socket.io-client"
 import './App.css'
 import Home from "./components/Home"
 import Room from "./components/Room"
-const ENDPOINT = "http://127.0.0.1:3000"
+const ENDPOINT = "http://127.0.0.1:3000/"
 
 function App({ history }) {
 
@@ -24,7 +24,7 @@ function App({ history }) {
     <Router>
       <Switch>
         <Route path="/:code">
-          <Room socket={socket} roomexists={roomexists} setRoomexists={setRoomexists}/>
+          <Room socket={socket} roomexists={roomexists} setRoomexists={setRoomexists} nickname={nickname} setNickname={setNickname}/>
         </Route>
         <Route path="/">
           <Home socket={socket} nickname={nickname} setNickname={setNickname} roomexists={roomexists} setRoomexists={setRoomexists}/>

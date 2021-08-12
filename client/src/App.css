@@ -154,3 +154,160 @@ html {
 .icon {
   color: white;
 }
+
+#main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: white;
+}
+
+#view {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+}
+
+#leftBar {
+  width: 25vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#content {
+  width: 55vw;
+}
+
+#rightBar {
+  width: 20vw;
+}
+
+#info {
+  height: 300px;
+  width: 100%;
+}
+
+.song {
+  display: flex;
+  flex-direction: row;
+}
+
+#search {
+  box-sizing: border-box;
+  border: none;
+  padding: 20px;
+  font-size: 16px;
+  outline: none;
+  font-weight: bold;
+  color: #161212;
+  width: 80%;
+  height: 50px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 10px;
+  padding-left: 20px;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+}
+
+#searchResults {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  outline: none;
+  align-items: center;
+  height: auto;
+  overflow-y: scroll;
+  width: 100%;
+}
+
+#searchResults input::placeholder {
+  color: black;
+}
+
+.menuitem input:focus {
+  border: none;
+}
+
+.searchResult {
+  width: 90%;
+  margin: 10px 0px;
+  height: 200px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 20px 0px;
+}
+
+.thumbnail {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-left: 20px;
+}
+
+.srDetails {
+  height: auto;
+  width: 100%;
+  overflow: hidden;
+}
+
+.srDetails > p,
+.srDetails > button {
+  margin: 0px 10px;
+}
+
+.songTitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 100px;
+  padding-bottom: 10px;
+}
+
+.addButton {
+  margin-right: 20px;
+  border: none;
+  background-color: #89cff0;
+  color: white;
+  height: 30px;
+  width: 100px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.addButton:hover {
+  background-color: #6495ed;
+}
+
+.songLive {
+  color: white;
+  background-color: red;
+  width: 50px;
+  text-align: center;
+  border-radius: 5px;
+  padding: 2px 5px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 10px;
+  /* box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); */
+}
+
+#content {
+  padding: 10px;
+}

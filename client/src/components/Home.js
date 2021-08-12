@@ -16,12 +16,12 @@ const Home = ({ socket, history, nickname, setNickname, roomexists, setRoomexist
     const [roomcode, setRoomcode] = useState("")
 
 
-    const requestRoomCreation = () => {
-        socket.emit("create room")
+    const requestRoomCreation = (nickname) => {
+        socket.emit("create room", nickname)
     }
 
-    const joinRoom = (code) => {
-        socket.emit("join room", code)
+    const joinRoom = (code, nickname) => {
+        socket.emit("join room", {code: code, nick: nickname})
     }
 
     if (socket) {
@@ -47,13 +47,13 @@ const Home = ({ socket, history, nickname, setNickname, roomexists, setRoomexist
                                 placeholder="Nickname" />
                         </div>
                         <div className="menuitem">
-                            <button id="newroombtn" type="button" onClick={requestRoomCreation}>New Room</button>
+                            <button id="newroombtn" type="button" onClick={() => {requestRoomCreation(nickname)}}>New Room</button>
                         </div>
                         <div className="menuitem">
                             <input id="codetf" type="text"
                                 value={roomcode} onChange={(e) => setRoomcode(e.target.value)}
                                 placeholder="Room Code" />
-                            <button id="joinbtn" type="button" onClick={() => joinRoom(roomcode)}>Join Room</button>
+                            <button id="joinbtn" type="button" onClick={() => joinRoom(roomcode, nickname)}>Join Room</button>
                         </div>
                     </div>
                     {roomexists ||
