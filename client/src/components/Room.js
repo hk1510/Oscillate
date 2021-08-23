@@ -2,7 +2,9 @@ import React, { useState, useEffect, useMemo} from 'react'
 import { useParams } from "react-router-dom"
 import { withRouter } from 'react-router'
 import { v4 as uuidv4 } from 'uuid'
-import ss from "socket.io-stream"
+import YouTube from 'react-youtube'
+import { IoIosPlay } from 'react-icons/io'
+import { IoIosPause } from 'react-icons/io'
 
 const Room = ({ socket, history, setRoomexists, nickname, setNickname}) => {
 
@@ -20,7 +22,9 @@ const Room = ({ socket, history, setRoomexists, nickname, setNickname}) => {
 
     const [playlist, setPlaylist] = useState([])
 
-    const [isPlaying, setIsPlaying] = useState(false)
+    const [videoId, setVideoId] = useState("")
+
+    const [startAt, setStartAt] = useState(0)
 
     // TODO: if user joins with link, ask for nickname
 
@@ -52,19 +56,10 @@ const Room = ({ socket, history, setRoomexists, nickname, setNickname}) => {
         setPlaylist(playlist)
     }
 
-
-    // https://github.com/nkzawa/socket.io-stream/issues/73
-
-    const handlePlayAudio = (stream) => {
-        let audio = document.getElementById('audio-player')
-        let parts = []
-        stream.on('data', (chunk) => {
-            parts.push(chunk)
-        })
-        stream.on('end', () => {
-            audio.src = (window.URL || window.webkitURL).createObjectURL(new Blob(parts))
-            audio.play()
-        })
+    const handlePlayAudio = ({ videoid }) => {
+        setStartAt(0)
+        setVideoId(videoid)
+        console.log(videoid)
     }
 
     useEffect(() => {
@@ -82,7 +77,7 @@ const Room = ({ socket, history, setRoomexists, nickname, setNickname}) => {
 
             socket.on("update playlist", updatePlaylistListener)
 
-            ss(socket).on("play audio", handlePlayAudio)
+            socket.on("play audio", handlePlayAudio)
         }
 
         return () => { 
@@ -100,7 +95,7 @@ const Room = ({ socket, history, setRoomexists, nickname, setNickname}) => {
 
                 socket.off("update playlist", updatePlaylistListener)
 
-                ss(socket).off("play audio", handlePlayAudio)
+                socket.off("play audio", handlePlayAudio)
             }
         }
     }, [socket, history, setRoomexists])
@@ -115,6 +110,7 @@ const Room = ({ socket, history, setRoomexists, nickname, setNickname}) => {
         if (socket) {
             if (roomStatus === "SUCCESS") {
                 socket.emit("get clients", code)
+                socket.emit("get playlist", code)
                 console.log("ACTUALLY GETTING CLIENTS")
             }
         }
@@ -140,9 +136,10 @@ const Room = ({ socket, history, setRoomexists, nickname, setNickname}) => {
         debounce(async (searchQuery) => {
             if (socket) {
                 socket.emit("get search results", searchQuery)
+                console.log("getting search results")
             }
         }, 300), 
-    [])
+    [socket])
 
     useEffect(() => {
         setLoading(true)
@@ -177,14 +174,39 @@ const Room = ({ socket, history, setRoomexists, nickname, setNickname}) => {
         )
     }
 
-    const togglePlay = () => {
-        let playing = isPlaying
-        setIsPlaying(!isPlaying)
-        if (!playing) {
-            if (socket) {
-                socket.emit("get audio", { videoid: "pxaVJRY3Sd4" })
-            }
-        }
+    const Video = ({votes, title, duration, isPlaying, id}) => {
+        return (
+            <div className="video">
+                <button className="videoPlayBtn">
+                {isPlaying 
+                ?
+                    <IoIosPause size="2em"/>
+                    
+                :
+                    <IoIosPlay size="2em"/>                    
+                }
+                </button>
+                <p className="videoTitle">{title}</p>
+                <p className="videoDuration">{duration}</p>
+                <p className="videoVotes">{votes}</p>
+            </div>
+        )
+    }
+
+    const togglePlay = (videoid) => {
+        // socket.emit("play audio", { videoid: videoid, roomCode: code })
+    }
+
+    const handleVideoStateChange = (event) => {
+        // TODO
+    }
+
+    const opts = {
+        playerVars: {
+            // https://developers.google.com/youtube/player_parameters
+            autoplay: 1,
+            controls: 0
+        },
     }
     
     switch(roomStatus) {
@@ -246,16 +268,26 @@ const Room = ({ socket, history, setRoomexists, nickname, setNickname}) => {
                             </div>
                             <div id="info">
                                 {/* TODO: info about music being played and controls*/}
-                                <audio src="" id="audio-player" controls preload='auto'></audio>
-                                <button onClick={togglePlay}>{isPlaying ? "Pause" : "Play"}</button> 
+                                <YouTube
+                                    // style={{display: "None"}}
+                                    videoId={videoId}
+                                    containerClassName="embed embed-youtube"
+                                    onStateChange={(e) => handleVideoStateChange(e)}
+                                    opts={opts}
+                                    className="youtube"
+                                />
                             </div>
                             <div id="playlist">
-                                {playlist.map((song) => {
-                                    return (<div className="song" key={song.id}>
-                                        <p>{song.votes}</p>
-                                        <p>{song.title}</p>
-                                        <p>{song.duration}</p>
-                                    </div>)
+                                {playlist.map((video) => {
+                                    return (
+                                        <Video
+                                            votes={video.votes} 
+                                            title={video.title} 
+                                            duration={video.duration}
+                                            isPlaying={video.isPlaying} 
+                                            id={video.id}
+                                        />
+                                    )
                                 })}
                             </div>
                         </div>

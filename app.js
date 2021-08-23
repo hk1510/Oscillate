@@ -58,6 +58,10 @@ const createRoom = () => {
         pass: "",
         playlist: [],
         numClients: 0,
+        isPlaying: false,
+        playingSongId: "",
+        currentTime: 0,
+        timeoutId: 0,
     }
     rooms[roomCode] = room
     return room
@@ -185,15 +189,26 @@ io.on("connection", (socket) => {
         setClientNicknames(code)
     })
 
-    socket.on("add song to playlist", ({title, duration, url, thumbnail, id, roomCode}) => {        
-        rooms[roomCode].playlist.push({title, duration, url, thumbnail, id, votes: 0})
-        io.to(roomCode).emit('update playlist', rooms[roomCode].playlist);
+    socket.on("get playlist", (roomCode) => {
+        if (rooms[roomCode]) {
+            socket.emit('update playlist', rooms[roomCode].playlist)
+        }
     })
 
-    socket.on("get audio", ({videoid}) => {
-        const stream = ss.createStream();
-        ss(socket).emit("play audio", stream)
-        ytdl(`https://www.youtube.com/watch?v=${videoid}`, {filter: 'audioonly'}).pipe(stream)
+    socket.on("add song to playlist", ({title, duration, url, thumbnail, id, roomCode}) => {
+        if(io.of("/").adapter.rooms.get(roomCode)) {
+            rooms[roomCode].playlist.push({title, duration, url, thumbnail, id, votes: 0, isPlaying: false})
+            io.to(roomCode).emit('update playlist', rooms[roomCode].playlist)
+        }  
+        
+    })
+
+    socket.on("play audio", ({videoid, roomCode}) => {
+        if(io.of("/").adapter.rooms.get(roomCode)) {
+            console.log(videoid)
+            io.to(roomCode).emit("play audio", {videoid: videoid})
+        }
+        console.log(io.of("/").adapter.rooms.get(roomCode))
     })
 
     socket.on("disconnect", () => {
